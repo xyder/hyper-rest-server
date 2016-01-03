@@ -1,0 +1,137 @@
+// endpoint: /api/v1/tasks
+{
+  "status": "OK",
+  "record_count": 2,
+  "data": [
+    {
+      "tasks": [
+        {
+          "task_id": "54f112defba522406c9cc208",
+          "title": "A title",
+          "body": "A description.",
+          "created": 1450263412,
+          "due": 1450429200,
+          "state": "done",  //variants: done, ongoing, open
+          "_links": [
+            {
+              "rel": "self",
+              "href": "/api/v1/tasks/54f112defba522406c9cc208",
+              "method": "GET"
+            },
+            {
+              "rel": "update",
+              "href": "/api/v1/tasks/54f112defba522406c9cc208",
+              "method": "POST",
+              "args": {
+                "title": "New title"  //can contain any, some, all or no parameters
+              }
+            },
+            {
+              "rel": "delete",
+              "href": "/api/v1/tasks/54f112defba522406c9cc208",
+              "method": "DELETE"
+            }
+          ]
+        },
+        {
+          "task_id": "54f113fffba522406c9cc20f",
+          "title": "Another title",
+          "body": "Another description.",
+          "created": 1450191352,
+          "due": 1450191412,
+          "state": "open",  //variants: done, ongoing, open
+          "_links": [
+            {
+              "rel": "self",
+              "href": "/api/v1/tasks/54f113fffba522406c9cc20f",
+              "method": "GET"
+            },
+            {
+              "rel": "update",
+              "href": "/api/v1/tasks/54f113fffba522406c9cc20f",
+              "method": "POST",
+              "args": {
+                "title": "New title"  //can contain any, some, all or no parameters
+              }
+            },
+            {
+              "rel": "delete",
+              "href": "/api/v1/tasks/54f113fffba522406c9cc20f",
+              "method": "DELETE"
+            }
+          ]
+        }
+      ],
+      "_links": [
+        {
+          "rel": "add",
+          "href": "/api/v1/tasks",
+          "method": "POST",
+          "args": {
+            "title": "Task title"  //can contain any, some, all or no paraemters
+          }
+        },
+        {
+          "rel": "self",
+          "href": "/api/v1/tasks",
+          "method": "GET"
+        }
+      ]
+    }
+  ]
+}
+
+// endpoint (GET): /api/v1/tasks/54f112defba522406c9cc208
+{
+  "status": "OK",
+  "record_count": 1,
+  "data": [
+    {
+      "tasks": [
+        {
+          "task_id": "54f112defba522406c9cc208",
+          "title": "A title",
+          "body": "A description.",
+          "created": 1450263412,
+          "due": 1450429200,
+          "state": "done",  //variants: done, ongoing, open
+          "_links": [
+            {
+              "rel": "self",
+              "href": "/api/v1/tasks/54f112defba522406c9cc208",
+              "method": "GET"
+            },
+            {
+              "rel": "update",
+              "href": "/api/v1/tasks/54f112defba522406c9cc208",
+              "method": "POST",
+              "args": {
+                "title": "New title"  //can contain any, some, all or no parameters
+              }
+            },
+            {
+              "rel": "delete",
+              "href": "/api/v1/tasks/54f112defba522406c9cc208",
+              "method": "DELETE"
+            }
+          ]
+        }
+      ],
+      "_links": [
+        {
+          "rel": "add",
+          "href": "/api/v1/tasks",
+          "method": "POST",
+          "args": {
+            "title": "Task title"  //can contain any, some, all or no paraemters
+          }
+        },
+        {
+          "rel": "self",
+          "href": "/api/v1/tasks",
+          "method": "GET"
+        }
+      ]
+    }
+  ]
+}
