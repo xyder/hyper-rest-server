@@ -86,6 +86,7 @@ def build_response(**kwargs):
 
     resp = {
         'status': kwargs.get('status', 'OK'),
+        'status_code': kwargs.get('status_code', 200),
         'record_count': kwargs.get('count', len(items)),
         'data': [
             {
@@ -98,4 +99,4 @@ def build_response(**kwargs):
         ]
 
     }
-    return jsonify(resp)
+    return jsonify(resp), resp['status_code']
