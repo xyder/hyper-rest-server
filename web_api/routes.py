@@ -17,29 +17,25 @@ def get_tasks(item_id=None):
     db = client.tasks_db
     query_filter = {}
 
-    if item_id is not None:
-        try:
-            query_filter['_id'] = ObjectId(item_id)
-        except InvalidId as _:
-            return get_400()
-        cursor = db.tasks.find(query_filter)
-        if cursor.count() == 0:
-            return get_404()
-    else:
-        cursor = db.tasks.find()
+    if not item_id:
+        return build_response(items_cursor=db.tasks.find())
 
-    return build_response(
-        items_cursor=cursor
-    )
+    try:
+        query_filter['_id'] = ObjectId(item_id)
+    except InvalidId as _:
+        return get_400()
+
+    cursor = db.tasks.find(query_filter)
+
+    if cursor.count() == 0:
+        return get_404()
+
+    return build_response(items_cursor=cursor)
 
 
 @app.route(config.api_url_start, methods=['POST'])
 @app.route('%s/<item_id>' % config.api_url_start, methods=['POST'])
 def add_edit_item(item_id=None):
-    client = MongoClient()
-    db = client.tasks_db
-    query_filter = {}
-
     try:
         new_data = request.json
     except HTTPException as e:
@@ -47,19 +43,42 @@ def add_edit_item(item_id=None):
             return get_400()
         else:
             return build_response(
-                status=e.description,
-                status_code=e.code
+                    status=e.description,
+                    status_code=e.code
             )
 
-    if item_id is not None:
-        try:
-            query_filter['_id'] = ObjectId(item_id)
-            old_item = db.tasks.find_one(query_filter)
-            db.tasks.replace_one(query_filter, join_dicts(old_item, new_data))
-            return build_response(items_cursor=db.tasks.find(query_filter))
-        except InvalidId as _:
-            return get_404()
-    else:
+    client = MongoClient()
+    db = client.tasks_db
+    query_filter = {}
+
+    if not item_id:
         res = db.tasks.insert_one(update_or_init(new_data))
         query_filter['_id'] = res.inserted_id
         return build_response(items_cursor=db.tasks.find(query_filter))
+
+    try:
+        query_filter['_id'] = ObjectId(item_id)
+        old_item = db.tasks.find_one(query_filter)
+        db.tasks.replace_one(query_filter, join_dicts(old_item, new_data))
+        return build_response(items_cursor=db.tasks.find(query_filter))
+    except InvalidId as _:
+        return get_404()
+
+
+@app.route('%s/<item_id>' % config.api_url_start, methods=['DELETE'])
+def delete_item(item_id):
+    client = MongoClient()
+    db = client.tasks_db
+    query_filter = {}
+
+    if not item_id:
+        return get_400()
+
+    try:
+        query_filter['_id'] = ObjectId(item_id)
+        result = db.tasks.delete_one(query_filter)
+        if result.deleted_count == 0:
+            return get_404()
+        return build_response(count=result.deleted_count)
+    except InvalidId as _:
+        return get_404()

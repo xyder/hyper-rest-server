@@ -80,24 +80,22 @@ def join_dicts(old_item, updated_values):
     }
 
 
+def convert_item(doc):
+    item_id = str(doc['_id'])
+    ret = update_or_init(doc)
+    ret['task_id'] = item_id
+    ret['_links'] = [
+        build_self_link(item_id),
+        build_update_link(item_id),
+        build_delete_link(item_id)
+    ]
+    return ret
+
+
 def convert_item_list(items_cursor):
     ret = []
     for doc in items_cursor:
-        item_id = str(doc['_id'])
-        item = {
-            'task_id': item_id,
-            'title': doc.get('title', ''),
-            'body': doc.get('body', ''),
-            'created': doc.get('created', 0),
-            'due': doc.get('due', 0),
-            'state': doc.get('state', 'open'),
-            '_links': [
-                build_self_link(item_id),
-                build_update_link(item_id),
-                build_delete_link(item_id)
-            ]
-        }
-        ret.append(item)
+        ret.append(convert_item(doc))
 
     return ret
 
@@ -106,7 +104,10 @@ def build_response(**kwargs):
     if 'items_cursor' in kwargs and kwargs['items_cursor'] is not None:
         items = convert_item_list(kwargs['items_cursor'])
     else:
-        items = []
+        if 'item' in kwargs and kwargs['item'] is not None:
+            items = [convert_item(kwargs['item'])]
+        else:
+            items = []
 
     resp = {
         'status': kwargs.get('status', 'OK'),
