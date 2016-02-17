@@ -10,6 +10,15 @@ app.config['api.vars'] = config
 
 
 @app.route(app.config['api.vars'].api_url_start, methods=['GET'])
+def get_start():
+    """
+    View that retrieves an empty list of items with all available actions on list.
+    :return:
+    """
+    return build_response()
+
+
+@app.route('%s/list' % app.config['api.vars'].api_url_start, methods=['GET'])
 @app.route('%s/<item_id>' % app.config['api.vars'].api_url_start, methods=['GET'])
 def get_tasks(item_id=None):
     """
@@ -50,6 +59,8 @@ def add_edit_item(item_id=None):
     # convert and fetch the json from the request
     try:
         new_data = request.json
+        if not new_data:
+            new_data = {}
     except HTTPException as e:
         # fail with 400 if not a json
         if e.code == 400:
@@ -111,3 +122,4 @@ def delete_item(item_id):
     # return an empty response with status code 200 and the record_count equal to deleted records count
     return build_response(count=result.deleted_count)
 
+# TODO: add 'list' action to main actions and mode tasks list to separate endpoint

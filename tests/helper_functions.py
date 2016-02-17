@@ -61,6 +61,11 @@ def get_mock_item_list(items):
                         'href': config.api_url_start,
                         'method': 'POST',
                         'rel': 'add'
+                    },
+                    {
+                        'href': '%s/list' % config.api_url_start,
+                        'method': 'GET',
+                        'rel': 'list'
                     }
                 ],
                 'tasks': []

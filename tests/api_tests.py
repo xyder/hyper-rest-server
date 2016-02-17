@@ -8,6 +8,10 @@ from web_api.routes import app
 
 
 class ApiTestCase(CustomApiTestCase):
+    def __init__(self, *args, **kwargs):
+        self.maxDiff = None
+        super().__init__(*args, **kwargs)
+
     def setUp(self):
         """
         Setup for the test environment.
@@ -111,7 +115,7 @@ class ApiTestCase(CustomApiTestCase):
             'status': 'closed'
         }
 
-        res = self.post(self.config.api_url_start, mock_data1)
+        res = self.post('%s' % self.config.api_url_start, mock_data1)
         self.assertEqual(res.status_code, 200)
 
         # fetch the id of the first task
@@ -131,7 +135,7 @@ class ApiTestCase(CustomApiTestCase):
         item = json.loads(res.data)
         mock_data2['id'] = str(item['data'][0]['tasks'][0]['task_id'])
 
-        res = self.get(self.config.api_url_start)
+        res = self.get('%s/list' % self.config.api_url_start)
         item = json.loads(res.data)
 
         # check the item list to correctly contain the two tasks

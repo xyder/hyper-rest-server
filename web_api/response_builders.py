@@ -30,64 +30,6 @@ def build_link(**kwargs):
     return ret
 
 
-def build_add_link():
-    """
-    Function that builds an "add" link
-    :return: an "add" link
-    """
-
-    return build_link(
-            rel='add',
-            href=config.api_url_start,
-            method=Methods.POST,
-            args=[]
-    )
-
-
-def build_self_link(item_id=None):
-    """
-    Function that builds a "self" link
-    :param item_id: the id for the item that this link will reference
-    :return: the "self" link
-    """
-
-    url = config.api_url_start + ('' if not item_id else '/%s' % item_id)
-    return build_link(
-            rel='self',
-            href=url,
-            method=Methods.GET
-    )
-
-
-def build_delete_link(item_id):
-    """
-    Function that builds a "delete" link
-    :param item_id: the id for the item that this link will reference
-    :return: the "delete" link
-    """
-
-    return build_link(
-            rel='delete',
-            href='%s/%s' % (config.api_url_start, item_id),
-            method=Methods.DELETE,
-    )
-
-
-def build_update_link(item_id):
-    """
-    Function that builds an "update" link
-    :param item_id: the id for the item that this link will reference
-    :return: the "update" link
-    """
-
-    return build_link(
-            rel='update',
-            href='%s/%s' % (config.api_url_start, item_id),
-            method=Methods.POST,
-            args=[]
-    )
-
-
 def update_or_init(values):
     """
     Function that converts the given values to a task dict and initializes any missing parameters.
@@ -98,8 +40,8 @@ def update_or_init(values):
     return {
         'title': values.get('title', ''),
         'body': values.get('body', ''),
-        'created': values.get('created', 0),
-        'due': values.get('due', 0),
+        'created': values.get('created') or 0,
+        'due': values.get('due') or 0,
         'state': values.get('state', 'open')
     }
 
@@ -144,11 +86,12 @@ def convert_item(doc):
 
     item_id = str(doc['_id'])
     ret = update_or_init(doc)
+    url = '%s/%s' % (config.api_url_start, item_id)
     ret['task_id'] = item_id
     ret['_links'] = [
-        build_self_link(item_id),
-        build_update_link(item_id),
-        build_delete_link(item_id)
+        build_link(rel='self', href=url, method=Methods.GET),
+        build_link(rel='update', href=url, method=Methods.POST, args=[]),
+        build_link(rel='delete', href=url, method=Methods.DELETE),
     ]
     return ret
 
@@ -193,8 +136,9 @@ def build_response(**kwargs):
             {
                 'tasks': items,
                 '_links': [
-                    build_self_link(),
-                    build_add_link()
+                    build_link(rel='self', href=config.api_url_start, method=Methods.GET),
+                    build_link(rel='add', href=config.api_url_start, method=Methods.POST, args=[]),
+                    build_link(rel='list', href='%s/list' % config.api_url_start, method=Methods.GET)
                 ]
             }
         ]
